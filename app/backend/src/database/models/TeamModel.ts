@@ -20,5 +20,6 @@ Team.init({
 });
 
 Team.hasMany(Matche, { foreignKey: 'home_team', as: 'matche' });
+Team.hasMany(Matche, { foreignKey: 'away_team', as: 'matche' });
 
 export default Team;
