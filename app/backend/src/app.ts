@@ -1,4 +1,5 @@
 import * as express from 'express';
+import loginRouter from './routers/login.router';
 
 class App {
   public app: express.Express;
@@ -8,6 +9,7 @@ class App {
 
     this.config();
 
+    this.app.use('/login', loginRouter);
     // Não remover essa rota
     this.app.get('/', (req, res) => res.json({ ok: true }));
   }
