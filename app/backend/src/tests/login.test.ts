@@ -67,5 +67,9 @@ describe('Test login routes', () => {
     it('returns a message', async () => {  
       expect(chaiHttpResponse.body).to.have.property('message');
     });
+
+    it('returns a message', async () => {  
+      expect(chaiHttpResponse.body).to.have.contain({ message: 'email or password invalid' });
+    });
   })
 })
