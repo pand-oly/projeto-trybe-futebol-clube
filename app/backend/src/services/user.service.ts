@@ -12,12 +12,17 @@ export default class UserService {
   }
 
   public async login(params: ILogin): Promise<string> {
-    const email = await this.userModel.findOne(params.email);
+    try {
+      const email = await this.userModel.findOne(params.email);
 
-    if (await compare(params.password, email.password)) {
+      if (!await compare(params.password, email.password)) {
+        throw new CustomError(401, 'Incorrect email or password');
+      }
+
       const token = jwtService.generate(params);
       return token;
+    } catch (error) {
+      throw new CustomError(401, 'Incorrect email or password');
     }
-    throw new CustomError(401, 'email or password invalid');
   }
 }
