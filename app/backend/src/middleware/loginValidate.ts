@@ -5,11 +5,11 @@ import { ILogin } from '../interfaces/IUser';
 
 const schema = Joi.object<ILogin>({
   email: Joi.string().email().required().messages({
-    'any.required': '400 / "email" is required',
+    'any.required': '400 / All fields must be filled',
     'string.email': '400 / "email" must be a valid email',
   }),
   password: Joi.string().min(6).required().messages({
-    'any.required': '401 / "password" is required',
+    'any.required': '400 / All fields must be filled',
     'string.min': '401 / "password" length must be at least 6 characters long',
   }),
 });
