@@ -34,7 +34,7 @@ describe('Test login routes', () => {
      sinon.stub(userMock, "findOne").resolves(RETURN_USER_MOCK as IUser);
     });
 
-    // after(() => userMock.findOne.restore());
+    after(() => sinon.restore());
 
     it('returns status code 200', async () => {
       expect(chaiHttpResponse).to.have.status(200);
@@ -42,6 +42,30 @@ describe('Test login routes', () => {
 
     it('returns a token', async () => {  
       expect(chaiHttpResponse.body).to.have.property('token');
+    });
+  })
+
+  describe('POST /login invalid user', () => {
+
+    before(async () => {
+      chaiHttpResponse = await chai
+      .request(app)
+      .post('/login')
+      .send({
+       email: 'user@user.com',
+       password: 'invalid_password',
+     });
+     sinon.stub(userMock, "findOne").resolves(RETURN_USER_MOCK as IUser);
+    });
+
+    after(() => sinon.restore());
+
+    it('returns status code 400', async () => {
+      expect(chaiHttpResponse).to.have.status(400);
+    });
+
+    it('returns a message', async () => {  
+      expect(chaiHttpResponse.body).to.have.property('message');
     });
   })
 })
