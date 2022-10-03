@@ -9,6 +9,6 @@ const userModel = new UserModel();
 const userService = new UserService(userModel);
 const userController = new UserController(userService);
 
-loginRouter.post('/', userController.findOne);
+loginRouter.post('/', (req, res) => userController.findOne(req, res));
 
 export default loginRouter;
