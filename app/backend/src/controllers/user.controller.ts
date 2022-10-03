@@ -1,12 +1,15 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import UserService from '../services/user.service';
 
 export default class UserController {
-  constructor(private userController: UserService) {}
+  constructor(private userService: UserService) {}
 
-  public async findOne(req: Request, res: Response) {
-    const { email } = req.body;
-    const result = await this.userController.findOne(email);
-    return res.send(result);
+  public async login(req: Request, res: Response, next: NextFunction) {
+    try {
+      const token = await this.userService.login(req.body);
+      return res.status(200).json({ token });
+    } catch (error) {
+      next(error);
+    }
   }
 }
