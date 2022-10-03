@@ -6,6 +6,7 @@ import { app } from '../app';
 import { Response } from 'superagent';
 import User from '../model/user.model'
 import IUser from '../interfaces/IUser';
+import { fail } from 'assert';
 
 chai.use(chaiHttp);
 const { expect } = chai;
@@ -43,7 +44,7 @@ describe('Test login routes', () => {
     it('returns a token', async () => {  
       expect(chaiHttpResponse.body).to.have.property('token');
     });
-  })
+  });
 
   describe('POST /login invalid user', () => {
 
@@ -71,5 +72,24 @@ describe('Test login routes', () => {
     it('returns a message', async () => {  
       expect(chaiHttpResponse.body).to.have.contain({ message: 'email or password invalid' });
     });
-  })
+  });
+
+  describe('POST /login if not parameter email', () => {
+    before(async () =>{
+      chaiHttpResponse = await chai
+      .request(app)
+      .post('/login')
+      .send({
+        password: 'any_password',
+      })
+    });
+
+    it('returns status code 400', async () => {
+      expect(chaiHttpResponse).to.have.status(400);
+    });
+
+    it('returns the message /"email"/ is required', () => {
+      expect(chaiHttpResponse.body).to.have.contain({ message: '/"email"/ is required' });
+    })
+  });
 })
