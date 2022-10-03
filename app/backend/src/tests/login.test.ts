@@ -89,7 +89,7 @@ describe('Test login routes', () => {
     });
 
     it('returns the message /"email"/ is required', () => {
-      expect(chaiHttpResponse.body).to.have.contain({ message: '/"email"/ is required' });
+      expect(chaiHttpResponse.body).to.have.contain({ message: '\"email\" is required' });
     })
   });
 })
