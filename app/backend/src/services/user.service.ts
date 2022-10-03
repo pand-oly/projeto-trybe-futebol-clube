@@ -18,6 +18,6 @@ export default class UserService {
       const token = jwtService.generate(params);
       return token;
     }
-    throw new CustomError(400, 'email or password invalid');
+    throw new CustomError(401, 'email or password invalid');
   }
 }
