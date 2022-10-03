@@ -61,8 +61,8 @@ describe('Test login routes', () => {
 
     after(() => sinon.restore());
 
-    it('returns status code 400', async () => {
-      expect(chaiHttpResponse).to.have.status(400);
+    it('returns status code 401', async () => {
+      expect(chaiHttpResponse).to.have.status(401);
     });
 
     it('returns a message', async () => {  
@@ -88,8 +88,69 @@ describe('Test login routes', () => {
       expect(chaiHttpResponse).to.have.status(400);
     });
 
-    it('returns the message /"email"/ is required', () => {
+    it('returns the message \"email\" is required', async () => {
       expect(chaiHttpResponse.body).to.have.contain({ message: '\"email\" is required' });
     })
   });
-})
+
+  describe('POST /login case not email valide', () => {
+    before(async () => {
+      chaiHttpResponse = await chai
+        .request(app)
+        .post('/login')
+        .send({
+          email: 'email_invalid',
+          password: 'password',
+        });
+    });
+
+    it('returns status code 400', async () => {
+      expect(chaiHttpResponse).to.have.status(400);
+    });
+
+    it('returns the message \"email\" must be a valid email', async () => {
+      expect(chaiHttpResponse.body).to.have.contain({ message: '\"email\" must be a valid email' })
+    });
+  });
+
+  describe('POST /login if not parameter password', () => {
+    before(async () => {
+      chaiHttpResponse = await chai
+        .request(app)
+        .post('/login')
+        .send({
+          email: 'email@email.com',
+        });
+    });
+
+    it('returns status code 401', async () => {
+      expect(chaiHttpResponse).to.have.status(401);
+    });
+
+    it('returns the message \"password\" is required', async () => {
+      expect(chaiHttpResponse.body).to.be.contain({ message: '\"password\" is required' });
+    });
+  });
+
+  describe.only('POST /login case password is less that 6', () => {
+    before(async () => {
+      chaiHttpResponse = await chai
+        .request(app)
+        .post('/login')
+        .send({
+          email: 'email@email.com',
+          password: '1234',
+        });
+    });
+
+    it('returns status code 401', async () => {
+      expect(chaiHttpResponse).to.have.status(401);
+    })
+
+    it('returns the message \"password\" length must be at least 6 characters long',
+      async () => {
+        expect(chaiHttpResponse.body).to.be
+          .contain({ message: '"password" length must be at least 6 characters long' });
+      });
+  });
+});
