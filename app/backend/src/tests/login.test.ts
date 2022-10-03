@@ -8,6 +8,7 @@ import User from '../model/user.model'
 import IUser from '../interfaces/IUser';
 import { fail } from 'assert';
 
+
 chai.use(chaiHttp);
 const { expect } = chai;
 
@@ -66,11 +67,7 @@ describe('Test login routes', () => {
     });
 
     it('returns a message', async () => {  
-      expect(chaiHttpResponse.body).to.have.property('message');
-    });
-
-    it('returns a message', async () => {  
-      expect(chaiHttpResponse.body).to.have.contain({ message: 'email or password invalid' });
+      expect(chaiHttpResponse.body).to.have.contain({ message: 'Incorrect email or password' });
     });
   });
 
@@ -89,11 +86,11 @@ describe('Test login routes', () => {
     });
 
     it('returns the message \"email\" is required', async () => {
-      expect(chaiHttpResponse.body).to.have.contain({ message: '\"email\" is required' });
+      expect(chaiHttpResponse.body).to.have.contain({ message: 'All fields must be filled' });
     })
   });
 
-  describe('POST /login case not email valide', () => {
+  describe('POST /login case not email', () => {
     before(async () => {
       chaiHttpResponse = await chai
         .request(app)
@@ -123,16 +120,16 @@ describe('Test login routes', () => {
         });
     });
 
-    it('returns status code 401', async () => {
-      expect(chaiHttpResponse).to.have.status(401);
+    it('returns status code 400', async () => {
+      expect(chaiHttpResponse).to.have.status(400);
     });
 
-    it('returns the message \"password\" is required', async () => {
-      expect(chaiHttpResponse.body).to.be.contain({ message: '\"password\" is required' });
+    it('returns the message All fields must be filled', async () => {
+      expect(chaiHttpResponse.body).to.be.contain({ message: 'All fields must be filled' });
     });
   });
 
-  describe.only('POST /login case password is less that 6', () => {
+  describe('POST /login case password is less that 6', () => {
     before(async () => {
       chaiHttpResponse = await chai
         .request(app)
@@ -152,5 +149,28 @@ describe('Test login routes', () => {
         expect(chaiHttpResponse.body).to.be
           .contain({ message: '"password" length must be at least 6 characters long' });
       });
+  });
+
+  describe('POST /login invalid email', () => {
+    before(async () => {
+      chaiHttpResponse = await chai
+        .request(app)
+        .post('/login')
+        .send({
+          email: 'invalid@email.com',
+          password: 'password',
+        });
+      sinon.stub(userMock, 'findOne').throws();
+    });
+
+    after(() => sinon.restore());
+
+    it('returns status 401', async () => {
+      expect(chaiHttpResponse).to.have.status(401);
+    });
+
+    it('returns the message Incorrect email or password', async () => {
+      expect(chaiHttpResponse.body).to.be.contain({ message: 'Incorrect email or password' });
+    });
   });
 });
