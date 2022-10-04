@@ -10,5 +10,6 @@ const teamService = new TeamService(teamModel);
 const teamController = new TeamController(teamService);
 
 teamsRouter.get('/', teamController.findAll);
+teamsRouter.get('/:id', teamController.findByPk);
 
 export default teamsRouter;
