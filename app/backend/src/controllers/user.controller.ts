@@ -12,4 +12,14 @@ export default class UserController {
       next(error);
     }
   }
+
+  public async loginValidate(req: Request, res: Response, next: NextFunction) {
+    const { authorization } = req.headers;
+    try {
+      const role = await this.userService.loginValidate(authorization as string);
+      return res.status(200).send({ role });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
