@@ -181,7 +181,7 @@ describe('Test login routes', () => {
   //       .request(app)
   //       .get('/login/validate')
   //       .send({
-  //         authorization: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9',
+  //         authorization: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9', //! como mockar???
   //       });
   //     sinon.stub(jwtService, 'decode')
   //       .returns({ email: 'user@user.com', iat: 1664881053, exp: 1664967453 });
