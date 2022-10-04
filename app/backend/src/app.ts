@@ -10,9 +10,11 @@ class App {
 
     this.config();
 
-    this.app.use('/login', routers.loginRouter);
     // Não remover essa rota
     this.app.get('/', (req, res) => res.json({ ok: true }));
+
+    this.app.use('/login', routers.loginRouter);
+    this.app.use('/teams', routers.teamsRouter);
 
     this.app.use(errorMidleware);
   }
