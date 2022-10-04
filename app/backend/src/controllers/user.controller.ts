@@ -17,7 +17,7 @@ export default class UserController {
     const { authorization } = req.headers;
     try {
       const role = await this.userService.loginValidate(authorization as string);
-      return res.status(200).send({ role });
+      return res.status(200).json({ role });
     } catch (error) {
       next(error);
     }
