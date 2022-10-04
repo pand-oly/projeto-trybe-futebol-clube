@@ -11,18 +11,28 @@ export default class UserService {
     return this.userModel.findOne(email);
   }
 
-  public async login(params: ILogin): Promise<string> {
+  public async login(login: ILogin): Promise<string> {
     try {
-      const email = await this.userModel.findOne(params.email);
+      const user = await this.userModel.findOne(login.email);
 
-      if (!await compare(params.password, email.password)) {
+      if (!await compare(login.password, user.password)) {
         throw new CustomError(401, 'Incorrect email or password');
       }
 
-      const token = jwtService.generate(params);
+      const token = jwtService.generate(login.email);
       return token;
     } catch (error) {
       throw new CustomError(401, 'Incorrect email or password');
+    }
+  }
+
+  public async loginValidate(token: string): Promise<string> {
+    try {
+      const payload = jwtService.decode(token);
+      const result = await this.userModel.findOne(payload.email);
+      return result.role;
+    } catch (error) {
+      throw new CustomError(400, 'non-existent user');
     }
   }
 }
