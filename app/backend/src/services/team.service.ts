@@ -4,5 +4,5 @@ import TeamModel from '../model/team.model';
 export default class TeamService {
   constructor(private teamModel: TeamModel) {}
 
-  private findAll = async (): Promise<ITeam[]> => this.teamModel.findAll();
+  public findAll = async (): Promise<ITeam[]> => this.teamModel.findAll();
 }
