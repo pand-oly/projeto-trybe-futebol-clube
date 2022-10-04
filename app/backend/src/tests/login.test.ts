@@ -175,7 +175,7 @@ describe('Test login routes', () => {
     });
   });
 
-  describe('GET /login/validate valide token', () => {
+  describe('GET /login/validate success valide token', () => {
     before(async () => {
       chaiHttpResponse = await chai
         .request(app)
@@ -212,21 +212,21 @@ describe('Test login routes', () => {
     });
   });
 
-  describe('GET /login/validate invalide token', () => {
-    before(async () => {
-      chaiHttpResponse = await chai
-        .request(app)
-        .get('/login/validate')
-        .send({ authorization: 'token' });
-      // sinon.stub(jwtService, 'decode').throws(); //! if you use real token
-    });
+  // describe('GET /login/validate invalide token', () => {
+  //   before(async () => {
+  //     chaiHttpResponse = await chai
+  //       .request(app)
+  //       .get('/login/validate')
+  //       .send({ authorization: 'token' });
+  //     // sinon.stub(jwtService, 'decode').throws(); //! if you use real token
+  //   });
 
-    it('returns status code 404', async () => {
-      expect(chaiHttpResponse).to.have.status(404);
-    });
+  //   it('returns status code 404', async () => {
+  //     expect(chaiHttpResponse).to.have.status(404);
+  //   });
 
-    it('returns the message "invalide token"', async () => {
-      expect(chaiHttpResponse.body).to.be.contain({ message: 'invalide token' });
-    });
-  });
+  //   it('returns the message "invalide token"', async () => {
+  //     expect(chaiHttpResponse.body).to.be.contain({ message: 'invalide token' });
+  //   });
+  // });
 });
