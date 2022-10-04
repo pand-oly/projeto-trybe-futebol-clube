@@ -3,7 +3,7 @@ import Joi = require('joi');
 import CustomError from '../error';
 import { ILogin } from '../interfaces/IUser';
 
-const schema = Joi.object<ILogin>({
+const schemaBody = Joi.object<ILogin>({
   email: Joi.string().email().required().messages({
     'any.required': '400 / All fields must be filled',
     'string.email': '400 / "email" must be a valid email',
@@ -14,8 +14,8 @@ const schema = Joi.object<ILogin>({
   }),
 });
 
-export default function loginValidate(req: Request, _res: Response, next: NextFunction) {
-  const { error } = schema.validate(req.body);
+export default function checkLoginBody(req: Request, _res: Response, next: NextFunction) {
+  const { error } = schemaBody.validate(req.body);
   if (error) {
     console.log('Login validate error:\n', error);
     const [code, message] = error.message.split(' / ');
