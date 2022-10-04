@@ -7,6 +7,7 @@ import { Response } from 'superagent';
 import User from '../model/user.model'
 import IUser from '../interfaces/IUser';
 import { fail } from 'assert';
+import jwtService from '../services/helpers/jwt.service';
 
 
 chai.use(chaiHttp);
@@ -171,6 +172,61 @@ describe('Test login routes', () => {
 
     it('returns the message Incorrect email or password', async () => {
       expect(chaiHttpResponse.body).to.be.contain({ message: 'Incorrect email or password' });
+    });
+  });
+
+  describe('GET /login/validate valide token', () => {
+    before(async () => {
+      chaiHttpResponse = await chai
+        .request(app)
+        .get('/login/validate')
+        .send({
+          authorization: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9',
+        });
+      sinon.stub(jwtService, 'decode')
+        .returns({ email: 'user@user.com', iat: 1664881053, exp: 1664967453 });
+    });
+
+    after(() => sinon.restore());
+
+    it('returns status code 200', async () => {
+      expect(chaiHttpResponse).to.have.status(200);
+    });
+
+    it('returns { role: "user" }', async () => {
+      expect(chaiHttpResponse.body).to.be.contain({ role: 'user' });
+    });
+  });
+
+  describe('GET /login/validate if authorization is undefined', () => {
+    before(async () => {
+      chaiHttpResponse = await chai.request(app).get('/login/validate');
+    });
+
+    it('returns status code 404', async () => {
+      expect(chaiHttpResponse).to.have.status(404);
+    });
+
+    it('returns the message "authorization is undefined"', async () => {
+      expect(chaiHttpResponse.body).to.be.contain({ message: 'authorization is undefined' });
+    });
+  });
+
+  describe('GET /login/validate invalide token', () => {
+    before(async () => {
+      chaiHttpResponse = await chai
+        .request(app)
+        .get('/login/validate')
+        .send({ authorization: 'token' });
+      // sinon.stub(jwtService, 'decode').throws(); //! if you use real token
+    });
+
+    it('returns status code 404', async () => {
+      expect(chaiHttpResponse).to.have.status(404);
+    });
+
+    it('returns the message "invalide token"', async () => {
+      expect(chaiHttpResponse.body).to.be.contain({ message: 'invalide token' });
     });
   });
 });
