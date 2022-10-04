@@ -26,7 +26,7 @@ export default class UserService {
     }
   }
 
-  public async loginValidate(token: string): Promise<string> {
+  public async loginValidate(token: string | undefined): Promise<string> {
     if (!token) {
       throw new CustomError(404, 'authorization is undefined');
     }
