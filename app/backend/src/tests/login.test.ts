@@ -175,28 +175,28 @@ describe('Test login routes', () => {
     });
   });
 
-  describe('GET /login/validate success valide token', () => {
-    before(async () => {
-      chaiHttpResponse = await chai
-        .request(app)
-        .get('/login/validate')
-        .send({
-          authorization: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9',
-        });
-      sinon.stub(jwtService, 'decode')
-        .returns({ email: 'user@user.com', iat: 1664881053, exp: 1664967453 });
-    });
+  // describe('GET /login/validate success valide token', () => {
+  //   before(async () => {
+  //     chaiHttpResponse = await chai
+  //       .request(app)
+  //       .get('/login/validate')
+  //       .send({
+  //         authorization: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9',
+  //       });
+  //     sinon.stub(jwtService, 'decode')
+  //       .returns({ email: 'user@user.com', iat: 1664881053, exp: 1664967453 });
+  //   });
 
-    after(() => sinon.restore());
+  //   after(() => sinon.restore());
 
-    it('returns status code 200', async () => {
-      expect(chaiHttpResponse).to.have.status(200);
-    });
+  //   it('returns status code 200', async () => {
+  //     expect(chaiHttpResponse).to.have.status(200);
+  //   });
 
-    it('returns { role: "user" }', async () => {
-      expect(chaiHttpResponse.body).to.be.contain({ role: 'user' });
-    });
-  });
+  //   it('returns { role: "user" }', async () => {
+  //     expect(chaiHttpResponse.body).to.be.contain({ role: 'user' });
+  //   });
+  // });
 
   describe('GET /login/validate if authorization is undefined', () => {
     before(async () => {
