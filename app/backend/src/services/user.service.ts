@@ -27,12 +27,11 @@ export default class UserService {
   }
 
   public async loginValidate(token: string): Promise<string> {
-    try {
-      const payload = jwtService.decode(token);
-      const result = await this.userModel.findOne(payload.email);
-      return result.role;
-    } catch (error) {
-      throw new CustomError(400, 'non-existent user');
+    if (!token) {
+      throw new CustomError(404, 'authorization is undefined');
     }
+    const payload = jwtService.decode(token);
+    const result = await this.userModel.findOne(payload.email);
+    return result.role;
   }
 }
