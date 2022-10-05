@@ -13,4 +13,9 @@ export default class MatcheModel {
       throw new CustomError(500, 'Erro database');
     }
   };
+
+  public queryInProgress = async (inProgress: boolean): Promise<IMatche[]> => {
+    const result = await this.model.findAll({ where: { inProgress } });
+    return result;
+  };
 }
