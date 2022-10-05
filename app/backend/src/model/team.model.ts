@@ -2,7 +2,7 @@ import ITeam from '../interfaces/ITeam';
 import teamModelDB from '../database/models/TeamModel';
 import CustomError from '../error';
 
-export default class TeamModel extends teamModelDB {
+export default class TeamModel {
   private model = teamModelDB;
 
   public findAll = async (): Promise<ITeam[]> => {
