@@ -4,16 +4,15 @@ import * as chai from 'chai';
 import chaiHttp = require('chai-http');
 import { app } from '../app';
 import { Response } from 'superagent';
-import User from '../model/user.model'
-import IUser from '../interfaces/IUser';
+import User from '../database/models/UserModel';
 import { fail } from 'assert';
-import jwtService from '../services/helpers/jwt.service';
+import jwtService from '../services/helpers/jwt.service'; //!
+import * as Jwt from 'jsonwebtoken';
 
 
 chai.use(chaiHttp);
 const { expect } = chai;
 
-const userMock = new User();
 const RETURN_USER_MOCK = {
   username: 'User',
   role: 'user',
@@ -34,7 +33,7 @@ describe('Test login routes', () => {
        email: 'user@user.com',
        password: 'secret_user',
      });
-     sinon.stub(userMock, "findOne").resolves(RETURN_USER_MOCK as IUser);
+     sinon.stub(User, "findOne").resolves(RETURN_USER_MOCK as User);
     });
 
     after(() => sinon.restore());
@@ -58,7 +57,7 @@ describe('Test login routes', () => {
        email: 'user@user.com',
        password: 'invalid_password',
      });
-     sinon.stub(userMock, "findOne").resolves(RETURN_USER_MOCK as IUser);
+     sinon.stub(User, "findOne").resolves(RETURN_USER_MOCK as User);
     });
 
     after(() => sinon.restore());
@@ -161,7 +160,7 @@ describe('Test login routes', () => {
           email: 'invalid@email.com',
           password: 'password',
         });
-      sinon.stub(userMock, 'findOne').throws();
+      sinon.stub(User, 'findOne').throws();
     });
 
     after(() => sinon.restore());
@@ -175,15 +174,13 @@ describe('Test login routes', () => {
     });
   });
 
-  // describe('GET /login/validate success valide token', () => {
+  // describe.only('GET /login/validate success valide token', () => {
   //   before(async () => {
   //     chaiHttpResponse = await chai
   //       .request(app)
   //       .get('/login/validate')
-  //       .send({
-  //         authorization: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9', //! como mockar???
-  //       });
-  //     sinon.stub(jwtService, 'decode')
+  //       .set('authorization', 'eyJh54ciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXJAdXNlci5jb20iLCJpYXQiOjE2NjQ5OTk0ODIsImV4cCI45TY2NTA4NTg4Mn0.-yoUNqX3A3spywSYo7eTsrQWGrvW1fKr9p7BDUFtJ45'); //! como mockar???
+  //     sinon.stub(Jwt, 'decode') //! authorization ainda undefined
   //       .returns({ email: 'user@user.com', iat: 1664881053, exp: 1664967453 });
   //   });
 
@@ -193,7 +190,8 @@ describe('Test login routes', () => {
   //     expect(chaiHttpResponse).to.have.status(200);
   //   });
 
-  //   it('returns { role: "user" }', async () => {
+  //   it.only('returns { role: "user" }', async () => {
+  //     console.log(chaiHttpResponse.header.authorization);
   //     expect(chaiHttpResponse.body).to.be.contain({ role: 'user' });
   //   });
   // });
