@@ -1,6 +1,6 @@
 import * as Jwt from 'jsonwebtoken';
-import CustomError from '../../error';
-import IJwtPayload from '../../interfaces/IJwtPayload';
+import CustomError from '../error';
+import IJwtPayload from '../interfaces/IJwtPayload';
 
 const { JWT_SECRET = 'secreto' } = process.env;
 
