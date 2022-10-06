@@ -30,4 +30,9 @@ export default class MatcheModel {
     });
     return result;
   };
+
+  public create = async (matche: IMatche): Promise<IMatche> => {
+    const result = await this.model.create(matche);
+    return result;
+  };
 }

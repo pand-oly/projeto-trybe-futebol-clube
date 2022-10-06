@@ -10,5 +10,6 @@ const matcheService = new MatcheService(matcheModel);
 const matcheController = new MatcheController(matcheService);
 
 matcheRouter.get('/', matcheController.findAll);
+matcheRouter.post('/', matcheController.create);
 
 export default matcheRouter;

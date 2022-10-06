@@ -12,4 +12,9 @@ export default class MatcheService {
     }
     return this.matcheModel.findAll();
   };
+
+  public create = async (matche: IMatche): Promise<IMatche> => {
+    const result = await this.matcheModel.create(matche);
+    return result;
+  };
 }

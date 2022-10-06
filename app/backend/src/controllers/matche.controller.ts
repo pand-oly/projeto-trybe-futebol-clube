@@ -13,4 +13,9 @@ export default class MatcheController {
       next(error);
     }
   };
+
+  public create = async (req: Request, res: Response, _next: NextFunction) => {
+    const result = await this.matcheService.create(req.body);
+    return res.status(200).send(result);
+  };
 }
