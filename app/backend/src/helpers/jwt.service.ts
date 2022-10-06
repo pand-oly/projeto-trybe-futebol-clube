@@ -1,6 +1,7 @@
 import * as Jwt from 'jsonwebtoken';
+import 'dotenv/config';
 import CustomError from '../error';
-import IJwtPayload from '../interfaces/IJwtPayload';
+// import IJwtPayload from '../interfaces/IJwtPayload';
 
 const { JWT_SECRET = 'secreto' } = process.env;
 
@@ -9,10 +10,10 @@ function generate(email: string) {
   return token;
 }
 
-function decode(token: string): IJwtPayload {
+function decode(token: string): Jwt.JwtPayload {
   try {
-    const result = Jwt.decode(token);
-    return result as IJwtPayload;
+    const result = Jwt.verify(token, JWT_SECRET) as Jwt.JwtPayload;
+    return result;
   } catch (error) {
     throw new CustomError(404, 'invalide token');
   }

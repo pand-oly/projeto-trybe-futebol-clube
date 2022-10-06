@@ -9,7 +9,12 @@ export default async function validateToken(token: string | undefined): Promise<
   if (!token) {
     throw new CustomError(404, 'authorization is undefined');
   }
-  const payload = jwtService.decode(token);
-  const user = await userModel.findOne(payload.email);
-  return user;
+  try {
+    const payload = jwtService.decode(token);
+    const user = await userModel.findOne(payload.email);
+    return user;
+  } catch (error) {
+    console.log(error);
+    throw new CustomError(404, 'invalide token');
+  }
 }
