@@ -23,7 +23,7 @@ const MATCHE_MOCK = {
 };
 const ARRAY_MATCHE_MOCK = [MATCHE_MOCK];
 
-describe('Test teams routes', () => {
+describe('Test matches routes', () => {
   let chaiHttpResponse: Response;
 
   describe('GET /matches findAll matches', () => {
