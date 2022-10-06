@@ -1,8 +1,9 @@
 import { compare } from 'bcryptjs';
 import UserModel from '../model/user.model';
 import IUser, { ILogin } from '../interfaces/IUser';
-import jwtService from './helpers/jwt.service';
+import jwtService from '../helpers/jwt.service';
 import CustomError from '../error';
+import validateToken from '../helpers/auth';
 
 export default class UserService {
   constructor(private userModel: UserModel) {}
@@ -26,12 +27,8 @@ export default class UserService {
     }
   }
 
-  public async loginValidate(token: string | undefined): Promise<string> {
-    if (!token) {
-      throw new CustomError(404, 'authorization is undefined');
-    }
-    const payload = jwtService.decode(token);
-    const result = await this.userModel.findOne(payload.email);
+  public static async loginValidate(token: string | undefined): Promise<string> {
+    const result = await validateToken(token);
     return result.role;
   }
 }
