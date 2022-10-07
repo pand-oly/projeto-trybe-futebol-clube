@@ -52,4 +52,13 @@ export default class MatcheModel {
       throw new CustomError(500, 'Erro findByPk matche database');
     }
   };
+
+  public updateInProgressMatche = async (id: number): Promise<number> => {
+    try {
+      const [rows] = await this.model.update({ inProgress: false }, { where: { id } });
+      return rows;
+    } catch (error) {
+      throw new CustomError(500, 'Erro findByPk matche database');
+    }
+  };
 }
