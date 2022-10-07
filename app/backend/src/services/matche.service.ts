@@ -17,4 +17,9 @@ export default class MatcheService {
     const result = await this.matcheModel.create(matche);
     return result;
   };
+
+  public findByPk = async (id: number): Promise<IMatche> => {
+    const result = await this.matcheModel.findByPk(id);
+    return result;
+  };
 }
