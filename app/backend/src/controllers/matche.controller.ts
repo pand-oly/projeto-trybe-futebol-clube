@@ -25,4 +25,14 @@ export default class MatcheController {
       next(error);
     }
   };
+
+  public updateInProgressMatche = async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params;
+    try {
+      const result = await this.matcheService.updateInProgressMatche(+id);
+      return res.status(200).send(result);
+    } catch (error) {
+      next(error);
+    }
+  };
 }
