@@ -43,4 +43,13 @@ export default class MatcheModel {
       throw new CustomError(500, 'Erro create new objct database');
     }
   };
+
+  public findByPk = async (id: number): Promise<IMatche> => {
+    try {
+      const result = await this.model.findByPk(id) as IMatche;
+      return result;
+    } catch (error) {
+      throw new CustomError(500, 'Erro findByPk matche database');
+    }
+  };
 }
