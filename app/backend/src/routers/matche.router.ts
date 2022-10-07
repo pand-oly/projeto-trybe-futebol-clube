@@ -11,5 +11,6 @@ const matcheController = new MatcheController(matcheService);
 
 matcheRouter.get('/', matcheController.findAll);
 matcheRouter.post('/', matcheController.create);
+matcheRouter.patch('/:id/finish', matcheController.updateInProgressMatche);
 
 export default matcheRouter;
