@@ -20,26 +20,61 @@ const MATCHE_MOCK = {
   "inProgress": false,
   "home_team": 16,
   "away_team": 8,
-};
+}
 const ARRAY_MATCHE_MOCK = [MATCHE_MOCK];
 
 describe('Test matches routes', () => {
   let chaiHttpResponse: Response;
 
+  beforeEach(() => sinon.restore());
+
   describe('GET /matches findAll matches', () => {
-    before(async () => {
-      sinon.stub(Matche, 'findAll').resolves(ARRAY_MATCHE_MOCK as any); //!
-      chaiHttpResponse = await chai.request(app).get('/matches');
-    });
-    
-    after(() => sinon.restore());
     
     it('returns status code 200', async () => {
+      sinon.stub(Matche, 'findAll').resolves(ARRAY_MATCHE_MOCK as any);
+      chaiHttpResponse = await chai.request(app).get('/matches');
+
       expect(chaiHttpResponse).to.have.status(200);
     });
 
-    it('returns array object', () => {
+    it('returns array object', async () => {
+      sinon.stub(Matche, 'findAll').resolves(ARRAY_MATCHE_MOCK as any);
+      chaiHttpResponse = await chai.request(app).get('/matches');
+
       expect(chaiHttpResponse.body).to.be.deep.equal(ARRAY_MATCHE_MOCK);
+    });
+  });
+
+  describe('POST /matches create new matche', () => {
+
+    it('returns status code 201', async () => {
+      sinon.stub(Matche, 'create').resolves(MATCHE_MOCK as any);
+      chaiHttpResponse = await chai.request(app).post('/matches').send({
+        "homeTeam": 16,
+        "homeTeamGoals": 1,
+        "awayTeam": 8,
+        "awayTeamGoals": 1,
+        "inProgress": false,
+        "home_team": 16,
+        "away_team": 8,
+      });
+
+      expect(chaiHttpResponse).to.have.status(201);
+    });
+
+    it('returns obj with new matche', async () => {
+      sinon.stub(Matche, 'create').resolves(MATCHE_MOCK as any);
+      chaiHttpResponse = await chai.request(app).post('/matches').send({
+        "homeTeam": 16,
+        "homeTeamGoals": 1,
+        "awayTeam": 8,
+        "awayTeamGoals": 1,
+        "inProgress": false,
+        "home_team": 16,
+        "away_team": 8,
+      });
+
+      expect(chaiHttpResponse.body).to.be.deep.equal(MATCHE_MOCK);
     });
   });
 });
