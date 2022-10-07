@@ -10,7 +10,7 @@ export default async function validateToken(token: string | undefined): Promise<
     throw new CustomError(404, 'authorization is undefined');
   }
   try {
-    const payload = jwtService.decode(token);
+    const payload = jwtService.verifyToken(token);
     const user = await userModel.findOne(payload.email);
     return user;
   } catch (error) {

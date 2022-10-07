@@ -8,8 +8,6 @@ import User from '../database/models/UserModel';
 import { fail } from 'assert';
 import jwtService from '../helpers/jwt.service';
 import * as Jwt from 'jsonwebtoken';
-import IJwtPayload from '../interfaces/IJwtPayload';
-
 
 chai.use(chaiHttp);
 const { expect } = chai;
@@ -181,7 +179,7 @@ describe('Test login routes', () => {
   describe('GET /login/validate success valide token', () => {
     
     it('returns status code 200', async () => {
-      sinon.stub(jwtService, 'decode').returns({ email: 'user@user.com' } as IJwtPayload);
+      sinon.stub(jwtService, 'verifyToken').returns({ email: 'user@user.com' } as Jwt.JwtPayload);
       sinon.stub(User, 'findOne').returns(RETURN_USER_MOCK as any);
       chaiHttpResponse = await chai
       .request(app)
@@ -192,7 +190,7 @@ describe('Test login routes', () => {
     });
 
     it('returns { role: "user" }', async () => {
-      sinon.stub(jwtService, 'decode').returns({ email: 'user@user.com' } as IJwtPayload);
+      sinon.stub(jwtService, 'verifyToken').returns({ email: 'user@user.com' } as Jwt.JwtPayload);
       sinon.stub(User, 'findOne').returns(RETURN_USER_MOCK as any);
       chaiHttpResponse = await chai
         .request(app)
@@ -221,7 +219,7 @@ describe('Test login routes', () => {
   describe('GET /login/validate invalide token', () => {
 
     it('returns status code 404', async () => {
-      sinon.stub(jwtService, 'decode').throws();
+      sinon.stub(jwtService, 'verifyToken').throws();
       chaiHttpResponse = await chai
         .request(app)
         .get('/login/validate')
@@ -231,7 +229,7 @@ describe('Test login routes', () => {
     });
 
     it('returns the message "invalide token"', async () => {
-      sinon.stub(jwtService, 'decode').throws();
+      sinon.stub(jwtService, 'verifyToken').throws();
       chaiHttpResponse = await chai
         .request(app)
         .get('/login/validate')
