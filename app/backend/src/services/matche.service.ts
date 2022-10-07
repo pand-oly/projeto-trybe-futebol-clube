@@ -1,6 +1,8 @@
 import MatcheModel from '../model/matche.model';
 import IMatche from '../interfaces/IMatche';
 
+type finised = { message: string };
+
 export default class MatcheService {
   constructor(private matcheModel: MatcheModel) {}
 
@@ -21,5 +23,10 @@ export default class MatcheService {
   public findByPk = async (id: number): Promise<IMatche> => {
     const result = await this.matcheModel.findByPk(id);
     return result;
+  };
+
+  public updateInProgressMatche = async (id: number): Promise<finised> => {
+    await this.matcheModel.updateInProgressMatche(id);
+    return { message: 'finished' };
   };
 }
