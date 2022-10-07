@@ -77,4 +77,20 @@ describe('Test matches routes', () => {
       expect(chaiHttpResponse.body).to.be.deep.equal(MATCHE_MOCK);
     });
   });
+
+  describe('PATCH /matches/:id/finish', () => {
+    it('returns status code 200', async () => {
+      sinon.stub(Matche, 'update').resolves(MATCHE_MOCK as any);
+      chaiHttpResponse = await chai.request(app).patch('/matches/1/finish');
+
+      expect(chaiHttpResponse).to.have.status(200);
+    });
+
+    it('returns "{ message: "Finished" }"', async () => {
+      sinon.stub(Matche, 'update').resolves(MATCHE_MOCK as any);
+      chaiHttpResponse = await chai.request(app).patch('/matches/1/finish');
+
+      expect(chaiHttpResponse.body).to.be.contain({ message: 'Finished' });
+    });
+  });
 });
