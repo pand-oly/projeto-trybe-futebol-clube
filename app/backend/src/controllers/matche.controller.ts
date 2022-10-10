@@ -32,4 +32,15 @@ export default class MatcheController {
       next(error);
     }
   };
+
+  public updateGols = async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params;
+    const { awayTeamGoals, homeTeamGoals } = req.body;
+    try {
+      await this.matcheService.updateGols({ id: +id, awayTeamGoals, homeTeamGoals });
+      res.status(200).send({ message: 'update gols' });
+    } catch (error) {
+      next(error);
+    }
+  };
 }

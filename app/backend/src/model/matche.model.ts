@@ -1,5 +1,5 @@
 import matcheModelDB from '../database/models/MatcheModel';
-import IMatche from '../interfaces/IMatche';
+import IMatche, { IUpdateGols } from '../interfaces/IMatche';
 import CustomError from '../error';
 import Team from '../database/models/TeamModel';
 
@@ -53,6 +53,15 @@ export default class MatcheModel {
     }
   };
 
+  public findOne = async (homeTeam: number, awayTeam: number): Promise<IMatche | null> => {
+    try {
+      const result = await this.model.findOne({ where: { homeTeam, awayTeam } });
+      return result;
+    } catch (error) {
+      throw new CustomError(500, 'Erro findOne matche database');
+    }
+  };
+
   public updateInProgressMatche = async (id: number): Promise<number> => {
     try {
       const [rows] = await this.model.update({ inProgress: false }, { where: { id } });
@@ -62,12 +71,15 @@ export default class MatcheModel {
     }
   };
 
-  public findOne = async (homeTeam: number, awayTeam: number): Promise<IMatche | null> => {
+  public updateGols = async (obj: IUpdateGols): Promise<void> => {
+    const { id, homeTeamGoals, awayTeamGoals } = obj;
     try {
-      const result = await this.model.findOne({ where: { homeTeam, awayTeam } });
-      return result;
+      await this.model.update(
+        { homeTeamGoals, awayTeamGoals },
+        { where: { id } },
+      );
     } catch (error) {
-      throw new CustomError(500, 'Erro findOne matche database');
+      throw new CustomError(500, 'Erro update matche database');
     }
   };
 }

@@ -11,14 +11,12 @@ const matcheModel = new MatcheModel();
 const matcheService = new MatcheService(matcheModel);
 const matcheController = new MatcheController(matcheService);
 
-matcheRouter.get('/', matcheController.findAll);
-matcheRouter.post(
-  '/',
-  validateAuthorization,
-  notEgualTeams,
-  validateTeams,
-  matcheController.create,
-);
-matcheRouter.patch('/:id/finish', matcheController.updateInProgressMatche);
+matcheRouter.route('/')
+  .get(matcheController.findAll)
+  .post(validateAuthorization, notEgualTeams, validateTeams, matcheController.create);
+
+matcheRouter.route('/:id/finish').patch(matcheController.updateInProgressMatche);
+
+matcheRouter.route('/:id').patch(matcheController.updateGols);
 
 export default matcheRouter;

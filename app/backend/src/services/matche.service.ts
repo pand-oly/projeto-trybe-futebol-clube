@@ -1,5 +1,5 @@
 import MatcheModel from '../model/matche.model';
-import IMatche from '../interfaces/IMatche';
+import IMatche, { IUpdateGols } from '../interfaces/IMatche';
 
 type finised = { message: string };
 
@@ -28,5 +28,9 @@ export default class MatcheService {
   public updateInProgressMatche = async (id: number): Promise<finised> => {
     await this.matcheModel.updateInProgressMatche(id);
     return { message: 'Finished' };
+  };
+
+  public updateGols = async (paramsBody: IUpdateGols): Promise<void> => {
+    await this.matcheModel.updateGols(paramsBody);
   };
 }
