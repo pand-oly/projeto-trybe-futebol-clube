@@ -58,7 +58,16 @@ export default class MatcheModel {
       const [rows] = await this.model.update({ inProgress: false }, { where: { id } });
       return rows;
     } catch (error) {
-      throw new CustomError(500, 'Erro findByPk matche database');
+      throw new CustomError(500, 'Erro update matche database');
+    }
+  };
+
+  public findOne = async (homeTeam: number, awayTeam: number): Promise<IMatche | null> => {
+    try {
+      const result = await this.model.findOne({ where: { homeTeam, awayTeam } });
+      return result;
+    } catch (error) {
+      throw new CustomError(500, 'Erro findOne matche database');
     }
   };
 }
