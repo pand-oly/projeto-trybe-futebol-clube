@@ -23,7 +23,7 @@ const MATCHE_MOCK = {
 }
 const ARRAY_MATCHE_MOCK = [MATCHE_MOCK];
 
-describe.only('Test matches routes', () => {
+describe('Test matches routes', () => {
   let chaiHttpResponse: Response;
 
   beforeEach(() => sinon.restore());
