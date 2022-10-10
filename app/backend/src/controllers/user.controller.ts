@@ -13,10 +13,10 @@ export default class UserController {
     }
   };
 
-  public static loginValidate = async (req: Request, res: Response, next: NextFunction) => {
+  public loginValidate = async (req: Request, res: Response, next: NextFunction) => {
     const { authorization } = req.headers;
     try {
-      const role = await UserService.loginValidate(authorization as string);
+      const role = await this.userService.loginValidate(authorization as string);
       return res.status(200).json({ role });
     } catch (error) {
       next(error);

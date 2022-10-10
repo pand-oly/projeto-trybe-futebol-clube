@@ -12,6 +12,6 @@ const userService = new UserService(userModel);
 const userController = new UserController(userService);
 
 loginRouter.post('/', checkLoginBody, userController.login);
-loginRouter.get('/validate', validateAuthorization, UserController.loginValidate);
+loginRouter.get('/validate', validateAuthorization, userController.loginValidate);
 
 export default loginRouter;

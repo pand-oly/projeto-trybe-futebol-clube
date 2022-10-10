@@ -3,7 +3,6 @@ import UserModel from '../model/user.model';
 import IUser, { ILogin } from '../interfaces/IUser';
 import jwtService from '../helpers/jwt.service';
 import CustomError from '../error';
-import validateToken from '../helpers/auth';
 
 export default class UserService {
   constructor(private userModel: UserModel) {}
@@ -27,8 +26,9 @@ export default class UserService {
     }
   }
 
-  public static async loginValidate(token: string | undefined): Promise<string> {
-    const result = await validateToken(token);
-    return result.role;
+  public async loginValidate(token: string): Promise<string> {
+    const payload = jwtService.verifyToken(token);
+    const user = await this.userModel.findOne(payload.email);
+    return user.role;
   }
 }
