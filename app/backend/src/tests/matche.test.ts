@@ -23,7 +23,7 @@ const MATCHE_MOCK = {
 }
 const ARRAY_MATCHE_MOCK = [MATCHE_MOCK];
 
-describe('Test matches routes', () => {
+describe.only('Test matches routes', () => {
   let chaiHttpResponse: Response;
 
   beforeEach(() => sinon.restore());
@@ -91,6 +91,88 @@ describe('Test matches routes', () => {
       chaiHttpResponse = await chai.request(app).patch('/matches/1/finish');
 
       expect(chaiHttpResponse.body).to.be.contain({ message: 'Finished' });
+    });
+  });
+
+  describe('POST /matches not create case equal teams', () => {
+
+    it('returns status code 401', async () => {
+      chaiHttpResponse = await chai.request(app).post('/matches').send({
+        "homeTeam": 16,
+        "homeTeamGoals": 1,
+        "awayTeam": 16,
+        "awayTeamGoals": 1,
+        "inProgress": false,
+        "home_team": 16,
+        "away_team": 8,
+      });
+
+      expect(chaiHttpResponse).to.have.status(401);
+    });
+
+    it('returns message It is not possible to create a match with two equal teams', async () => {
+      chaiHttpResponse = await chai.request(app).post('/matches').send({
+        "homeTeam": 16,
+        "homeTeamGoals": 1,
+        "awayTeam": 16,
+        "awayTeamGoals": 1,
+        "inProgress": false,
+        "home_team": 16,
+        "away_team": 8,
+      });
+
+
+      expect(chaiHttpResponse.body).to.be.deep
+        .equal({ message: 'It is not possible to create a match with two equal teams' });
+    });
+  });
+
+  describe('POST /matches not create if non-existent team', () => {
+
+    it('returns status code 404 case non-existent homeTeam', async () => {
+      sinon.stub(Matche, 'findOne').resolves(null as null);
+      chaiHttpResponse = await chai.request(app).post('/matches').send({
+        "homeTeam": 999,
+        "homeTeamGoals": 1,
+        "awayTeam": 8,
+        "awayTeamGoals": 1,
+        "inProgress": false,
+        "home_team": 16,
+        "away_team": 8,
+      });
+
+      expect(chaiHttpResponse).to.have.status(404);
+    });
+
+    it('returns status code 404 case non-existent awayTeam', async () => {
+      sinon.stub(Matche, 'findOne').resolves(null as null);
+      chaiHttpResponse = await chai.request(app).post('/matches').send({
+        "homeTeam": 9,
+        "homeTeamGoals": 1,
+        "awayTeam": 999,
+        "awayTeamGoals": 1,
+        "inProgress": false,
+        "home_team": 16,
+        "away_team": 8,
+      });
+
+      expect(chaiHttpResponse).to.have.status(404);
+    });
+
+    it('returns message There is no team with such id!', async () => {
+      sinon.stub(Matche, 'findOne').resolves(null as null);
+      chaiHttpResponse = await chai.request(app).post('/matches').send({
+        "homeTeam": 999,
+        "homeTeamGoals": 1,
+        "awayTeam": 998,
+        "awayTeamGoals": 1,
+        "inProgress": false,
+        "home_team": 16,
+        "away_team": 8,
+      });
+
+      expect(chaiHttpResponse.body).to.be.deep
+        .equal({ message: 'There is no team with such id!' });
     });
   });
 });
