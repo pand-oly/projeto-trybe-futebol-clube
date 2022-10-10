@@ -4,22 +4,22 @@ import UserService from '../services/user.service';
 export default class UserController {
   constructor(private userService: UserService) {}
 
-  public async login(req: Request, res: Response, next: NextFunction) {
+  public login = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const token = await this.userService.login(req.body);
       return res.status(200).json({ token });
     } catch (error) {
       next(error);
     }
-  }
+  };
 
-  public static async loginValidate(req: Request, res: Response, next: NextFunction) {
+  public static loginValidate = async (req: Request, res: Response, next: NextFunction) => {
     const { authorization } = req.headers;
     try {
-      const role = await UserService.loginValidate(authorization);
+      const role = await UserService.loginValidate(authorization as string);
       return res.status(200).json({ role });
     } catch (error) {
       next(error);
     }
-  }
+  };
 }
