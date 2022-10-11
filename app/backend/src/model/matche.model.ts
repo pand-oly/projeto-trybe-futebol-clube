@@ -44,15 +44,6 @@ export default class MatcheModel {
     }
   };
 
-  public findOne = async (homeTeam: number, awayTeam: number): Promise<IMatche | null> => {
-    try {
-      const result = await this.model.findOne({ where: { homeTeam, awayTeam } });
-      return result;
-    } catch (error) {
-      throw new CustomError(500, 'Erro findOne matche database');
-    }
-  };
-
   public create = async (matche: IMatche): Promise<IMatche> => {
     try {
       const result = await this.model.create(matche);
