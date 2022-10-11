@@ -25,8 +25,8 @@ export default class MatcheService {
     return result;
   };
 
-  public updateInProgressMatche = async (id: number): Promise<finised> => {
-    await this.matcheModel.updateInProgressMatche(id);
+  public updateInProgress = async (id: number): Promise<finised> => {
+    await this.matcheModel.updateInProgress(id);
     return { message: 'Finished' };
   };
 

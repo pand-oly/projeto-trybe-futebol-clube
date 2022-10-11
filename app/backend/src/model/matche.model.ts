@@ -35,15 +35,6 @@ export default class MatcheModel {
     }
   };
 
-  public create = async (matche: IMatche): Promise<IMatche> => {
-    try {
-      const result = await this.model.create(matche);
-      return result;
-    } catch (error) {
-      throw new CustomError(500, 'Erro create new objct database');
-    }
-  };
-
   public findByPk = async (id: number): Promise<IMatche> => {
     try {
       const result = await this.model.findByPk(id) as IMatche;
@@ -62,7 +53,16 @@ export default class MatcheModel {
     }
   };
 
-  public updateInProgressMatche = async (id: number): Promise<number> => {
+  public create = async (matche: IMatche): Promise<IMatche> => {
+    try {
+      const result = await this.model.create(matche);
+      return result;
+    } catch (error) {
+      throw new CustomError(500, 'Erro create new objct database');
+    }
+  };
+
+  public updateInProgress = async (id: number): Promise<number> => {
     try {
       const [rows] = await this.model.update({ inProgress: false }, { where: { id } });
       return rows;

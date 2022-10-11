@@ -15,7 +15,7 @@ matcheRouter.route('/')
   .get(matcheController.findAll)
   .post(validateAuthorization, notEgualTeams, validateTeams, matcheController.create);
 
-matcheRouter.route('/:id/finish').patch(matcheController.updateInProgressMatche);
+matcheRouter.route('/:id/finish').patch(matcheController.updateInProgress);
 
 matcheRouter.route('/:id').patch(matcheController.updateGols);
 

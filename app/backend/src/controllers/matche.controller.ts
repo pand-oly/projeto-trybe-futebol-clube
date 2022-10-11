@@ -23,10 +23,10 @@ export default class MatcheController {
     }
   };
 
-  public updateInProgressMatche = async (req: Request, res: Response, next: NextFunction) => {
+  public updateInProgress = async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     try {
-      const result = await this.matcheService.updateInProgressMatche(+id);
+      const result = await this.matcheService.updateInProgress(+id);
       return res.status(200).send(result);
     } catch (error) {
       next(error);
