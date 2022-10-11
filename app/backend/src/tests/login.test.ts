@@ -218,24 +218,24 @@ describe('Test login routes', () => {
 
   describe('GET /login/validate invalide token', () => {
 
-    it('returns status code 404', async () => {
-      sinon.stub(jwtService, 'verifyToken').throws();
+    it('returns status code 401', async () => {
+      sinon.stub(Jwt, 'verify').throws();
       chaiHttpResponse = await chai
         .request(app)
         .get('/login/validate')
         .set('authorization', 'token');
 
-      expect(chaiHttpResponse).to.have.status(404);
+      expect(chaiHttpResponse).to.have.status(401);
     });
 
-    it('returns the message "invalide token"', async () => {
-      sinon.stub(jwtService, 'verifyToken').throws();
+    it('returns the message "Token must be a valid token"', async () => {
+      sinon.stub(Jwt, 'verify').throws();
       chaiHttpResponse = await chai
         .request(app)
         .get('/login/validate')
         .set('authorization', 'token');
 
-      expect(chaiHttpResponse.body).to.be.contain({ message: 'invalide token' });
+      expect(chaiHttpResponse.body).to.be.contain({ message: 'Token must be a valid token' });
     });
   });
 });
