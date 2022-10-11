@@ -14,7 +14,6 @@ function verifyToken(token: string): Jwt.JwtPayload {
     const result = Jwt.verify(token, JWT_SECRET) as Jwt.JwtPayload;
     return result;
   } catch (error) {
-    console.log('verify Token jwt Service \n', error);
     throw new CustomError(401, 'Token must be a valid token');
   }
 }
