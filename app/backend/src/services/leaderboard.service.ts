@@ -1,30 +1,118 @@
 import MatcheModel from '../model/matche.model';
 import TeamModel from '../model/team.model';
 import ITeam from '../interfaces/ITeam';
-import ITeamboard from '../interfaces/ITeamboard';
-// import IMatche from '../interfaces/IMatche';
+import ITeamboard, { ICalcGames, ICalcGoals } from '../interfaces/ITeamboard';
+import IMatche from '../interfaces/IMatche';
 
 export default class LeaderboardService {
   constructor(private matcheModel: MatcheModel, private teamModel: TeamModel) {}
 
   public findAll = async (): Promise<ITeamboard[]> => {
     const teams = await this.teamModel.findAll();
-    const test = teams.map(this.newboard);
-    console.log(test);
+    const board = teams.map(this.newBoard);
 
-    return test;
+    return Promise.all(board);
   };
 
-  newboard = (team: ITeam) => ({
-    name: team.teamName,
-    totalPoints: 0,
-    totalGames: 0,
-    totalVictories: 0,
-    totalDraws: 0,
-    totalLosses: 0,
-    goalsFavor: 0,
-    goalsOwn: 0,
-    goalsBalance: 0,
-    efficiency: 0,
-  });
+  private newBoard = async (team: ITeam): Promise<ITeamboard> => {
+    const arrayMatchesHome = await this.matcheModel.findHomeTeam(team.id as number);
+    const arrayMatchesAway = await this.matcheModel.findAwayTeam(team.id as number);
+
+    const { goalsFavor, goalsOwn } = this.calcGoalsMatches(arrayMatchesHome, arrayMatchesAway);
+    const {
+      efficiency, totalGames, totalPoints, totalVictories, totalDraws, totalLosses,
+    } = this.sumResultGames(arrayMatchesHome, arrayMatchesAway);
+
+    return {
+      name: team.teamName,
+      totalPoints,
+      totalGames,
+      totalVictories,
+      totalDraws,
+      totalLosses,
+      goalsFavor,
+      goalsOwn,
+      goalsBalance: goalsFavor - goalsOwn,
+      efficiency,
+    };
+  };
+
+  sumResultGames = (arrayMatchesHome: IMatche[], arrayMatchesAway: IMatche[]) => {
+    const resultGamesHome = this.calcResultMatchesHome(arrayMatchesHome);
+    const resultGamesAway = this.calcResultMatchesAway(arrayMatchesAway);
+
+    const totalPoints = resultGamesAway.totalPoints + resultGamesHome.totalPoints;
+    const totalGames = resultGamesAway.totalGames + resultGamesHome.totalGames;
+    const efficiency = ((totalPoints / (totalGames * 3)) * 100).toFixed(2);
+    const totalVictories = resultGamesAway.totalVictories + resultGamesHome.totalVictories;
+    const totalDraws = resultGamesAway.totalDraws + resultGamesHome.totalDraws;
+    const totalLosses = resultGamesAway.totalLosses + resultGamesHome.totalLosses;
+
+    return {
+      efficiency,
+      totalGames,
+      totalPoints,
+      totalVictories,
+      totalDraws,
+      totalLosses,
+    };
+  };
+
+  calcGoalsMatches = (arrayMatchesHome: IMatche[], arrayMatchesAway: IMatche[]): ICalcGoals => {
+    const resultGames = { goalsFavor: 0, goalsOwn: 0 };
+
+    arrayMatchesHome.forEach((cur) => {
+      resultGames.goalsFavor += cur.homeTeamGoals;
+      resultGames.goalsOwn += cur.awayTeamGoals;
+    });
+
+    arrayMatchesAway.forEach((cur) => {
+      resultGames.goalsFavor += cur.awayTeamGoals;
+      resultGames.goalsOwn += cur.homeTeamGoals;
+    });
+
+    return resultGames;
+  };
+
+  calcResultMatchesHome = (arrayMatches: IMatche[]): ICalcGames => {
+    const resultGames = { totalGames: 0, totalPoints: 0 };
+    const resultGames2 = { totalVictories: 0, totalDraws: 0, totalLosses: 0 };
+
+    arrayMatches.forEach((cur) => {
+      if (cur.homeTeamGoals > cur.awayTeamGoals) {
+        resultGames.totalPoints += 3;
+        resultGames2.totalVictories += 1;
+      } else if (cur.homeTeamGoals === cur.awayTeamGoals) {
+        resultGames.totalPoints += 1;
+        resultGames2.totalDraws += 1;
+      } else {
+        resultGames2.totalLosses += 1;
+      }
+
+      resultGames.totalGames += 1;
+    });
+
+    return { ...resultGames, ...resultGames2 };
+  };
+
+  calcResultMatchesAway = (arrayMatches: IMatche[]): ICalcGames => {
+    const resultGames = { totalGames: 0, totalPoints: 0 };
+    const resultGames2 = { totalVictories: 0, totalDraws: 0, totalLosses: 0 };
+
+    arrayMatches.forEach((cur) => {
+      if (cur.homeTeamGoals < cur.awayTeamGoals) {
+        resultGames.totalPoints += 3;
+        resultGames2.totalVictories += 1;
+      } else if (cur.homeTeamGoals === cur.awayTeamGoals) {
+        resultGames.totalPoints += 1;
+        resultGames2.totalDraws += 1;
+      } else {
+        resultGames2.totalLosses += 1;
+      }
+
+      resultGames.totalGames += 1;
+    });
+
+    return { ...resultGames, ...resultGames2 };
+  };
 }
