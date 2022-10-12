@@ -7,14 +7,52 @@ import IMatche from '../interfaces/IMatche';
 export default class LeaderboardService {
   constructor(private matcheModel: MatcheModel, private teamModel: TeamModel) {}
 
-  public findAll = async (): Promise<ITeamboard[]> => {
+  public findHome = async (): Promise<ITeamboard[]> => {
     const teams = await this.teamModel.findAll();
-    const board = teams.map(this.newBoard);
+    const board = teams.map(this.getBoardHome);
 
     return Promise.all(board);
   };
 
-  private newBoard = async (team: ITeam): Promise<ITeamboard> => {
+  private getBoardHome = async (team: ITeam): Promise<ITeamboard> => {
+    const arrayMatchesHome = await this.matcheModel.findHomeTeam(team.id as number);
+
+    const { goalsFavor, goalsOwn } = this.calcGoalsHome(arrayMatchesHome);
+    const {
+      totalGames, totalPoints, totalVictories, totalDraws, totalLosses,
+    } = this.calcResultMatchesHome(arrayMatchesHome);
+
+    const efficiency = ((totalPoints / (totalGames * 3)) * 100).toFixed(2);
+
+    return {
+      name: team.teamName,
+      totalPoints,
+      totalGames,
+      totalVictories,
+      totalDraws,
+      totalLosses,
+      goalsFavor,
+      goalsOwn,
+      goalsBalance: goalsFavor - goalsOwn,
+      efficiency,
+    };
+  };
+
+  calcGoalsHome = (arrayMatchesHome: IMatche[]): ICalcGoals => {
+    const resultGames = { goalsFavor: 0, goalsOwn: 0 };
+
+    arrayMatchesHome.forEach((cur) => {
+      resultGames.goalsFavor += cur.homeTeamGoals;
+      resultGames.goalsOwn += cur.awayTeamGoals;
+    });
+
+    return resultGames;
+  };
+
+  // !
+  // !
+
+  private getAllBoard = async (team: ITeam): Promise<ITeamboard> => {
     const arrayMatchesHome = await this.matcheModel.findHomeTeam(team.id as number);
     const arrayMatchesAway = await this.matcheModel.findAwayTeam(team.id as number);
 
