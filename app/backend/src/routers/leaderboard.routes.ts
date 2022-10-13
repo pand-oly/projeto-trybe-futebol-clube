@@ -12,5 +12,6 @@ const leaderboardService = new LeaderboardService(matcheModel, teamModel);
 const leaderboardController = new LeaderboardController(leaderboardService);
 
 leaderboardRouter.get('/home', leaderboardController.findHome);
+leaderboardRouter.get('/away', leaderboardController.findAway);
 
 export default leaderboardRouter;

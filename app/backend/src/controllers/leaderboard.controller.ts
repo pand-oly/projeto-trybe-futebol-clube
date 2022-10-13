@@ -12,4 +12,13 @@ export default class LeaderboardController {
       next(error);
     }
   };
+
+  public findAway = async (_req: Request, res: Response, next: NextFunction) => {
+    try {
+      const result = await this.leaderboardService.findAway();
+      return res.send(result);
+    } catch (error) {
+      next(error);
+    }
+  };
 }
