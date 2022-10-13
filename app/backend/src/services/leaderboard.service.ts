@@ -11,7 +11,18 @@ export default class LeaderboardService {
     const teams = await this.teamModel.findAll();
     const board = teams.map(this.getBoardHome);
 
-    return Promise.all(board);
+    const result = this.sortLeaderboard(await Promise.all(board));
+    return result;
+  };
+
+  private sortLeaderboard = (leaderboard: ITeamboard[]): ITeamboard[] => {
+    leaderboard.sort((a, b) => b.totalPoints - a.totalPoints
+    || b.totalVictories - a.totalVictories
+    || b.goalsBalance - a.goalsBalance
+    || b.goalsFavor - a.goalsFavor
+    || b.goalsOwn - a.goalsOwn);
+
+    return leaderboard;
   };
 
   private getBoardHome = async (team: ITeam): Promise<ITeamboard> => {
@@ -38,7 +49,7 @@ export default class LeaderboardService {
     };
   };
 
-  calcGoalsHome = (arrayMatchesHome: IMatche[]): ICalcGoals => {
+  private calcGoalsHome = (arrayMatchesHome: IMatche[]): ICalcGoals => {
     const resultGames = { goalsFavor: 0, goalsOwn: 0 };
 
     arrayMatchesHome.forEach((cur) => {
@@ -49,9 +60,28 @@ export default class LeaderboardService {
     return resultGames;
   };
 
-  // !
-  // !
+  private calcResultMatchesHome = (arrayMatches: IMatche[]): ICalcGames => {
+    const resultGames = { totalGames: 0, totalPoints: 0 };
+    const resultGames2 = { totalVictories: 0, totalDraws: 0, totalLosses: 0 };
 
+    arrayMatches.forEach((cur) => {
+      if (cur.homeTeamGoals > cur.awayTeamGoals) {
+        resultGames.totalPoints += 3;
+        resultGames2.totalVictories += 1;
+      } else if (cur.homeTeamGoals === cur.awayTeamGoals) {
+        resultGames.totalPoints += 1;
+        resultGames2.totalDraws += 1;
+      } else {
+        resultGames2.totalLosses += 1;
+      }
+
+      resultGames.totalGames += 1;
+    });
+
+    return { ...resultGames, ...resultGames2 };
+  };
+
+  /*
   private getAllBoard = async (team: ITeam): Promise<ITeamboard> => {
     const arrayMatchesHome = await this.matcheModel.findHomeTeam(team.id as number);
     const arrayMatchesAway = await this.matcheModel.findAwayTeam(team.id as number);
@@ -112,27 +142,6 @@ export default class LeaderboardService {
     return resultGames;
   };
 
-  calcResultMatchesHome = (arrayMatches: IMatche[]): ICalcGames => {
-    const resultGames = { totalGames: 0, totalPoints: 0 };
-    const resultGames2 = { totalVictories: 0, totalDraws: 0, totalLosses: 0 };
-
-    arrayMatches.forEach((cur) => {
-      if (cur.homeTeamGoals > cur.awayTeamGoals) {
-        resultGames.totalPoints += 3;
-        resultGames2.totalVictories += 1;
-      } else if (cur.homeTeamGoals === cur.awayTeamGoals) {
-        resultGames.totalPoints += 1;
-        resultGames2.totalDraws += 1;
-      } else {
-        resultGames2.totalLosses += 1;
-      }
-
-      resultGames.totalGames += 1;
-    });
-
-    return { ...resultGames, ...resultGames2 };
-  };
-
   calcResultMatchesAway = (arrayMatches: IMatche[]): ICalcGames => {
     const resultGames = { totalGames: 0, totalPoints: 0 };
     const resultGames2 = { totalVictories: 0, totalDraws: 0, totalLosses: 0 };
@@ -152,5 +161,5 @@ export default class LeaderboardService {
     });
 
     return { ...resultGames, ...resultGames2 };
-  };
+  }; */
 }
