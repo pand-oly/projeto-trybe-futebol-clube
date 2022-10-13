@@ -1,7 +1,7 @@
-// import sequelize = require('sequelize');
+import sequelize = require('sequelize');
 import matcheModelDB from '../database/models/MatcheModel';
 import IMatche, { IUpdateGols } from '../interfaces/IMatche';
-// import { IResultsMatchesAway, IResultsMatchesHome } from '../interfaces/ITeamboard';
+import { ICalcGoals } from '../interfaces/ITeamboard';
 import CustomError from '../error';
 import Team from '../database/models/TeamModel';
 
@@ -64,40 +64,40 @@ export default class MatcheModel {
     }
   };
 
-  // public findHomeTeam = async (homeTeam: number): Promise<IResultsMatchesHome[]> => {
-  //   try { //! sequelize fail
-  //     const result = await this.model.findAll({
-  //       where: { homeTeam, inProgress: false },
-  //       attributes: [
-  //         [sequelize.fn('sum', sequelize.col('home_team_goals')), 'sumGoalsFavorHome'],
-  //         [sequelize.fn('sum', sequelize.col('away_team_goals')), 'sumGoalsOwnHome'],
-  //       ],
-  //     }) as unknown;
-  //     return result as IResultsMatchesHome[];
-  //   } catch (error) {
-  //     console.log(error);
-  //     throw new CustomError(500, 'Erro findHomeTeam matche database');
-  //   }
-  // };
+  public findCalcGoalsHome = async (homeTeam: number): Promise<ICalcGoals> => {
+    try {
+      const [result] = await this.model.findAll({
+        where: { homeTeam, inProgress: false },
+        attributes: [
+          [sequelize.fn('sum', sequelize.col('home_team_goals')), 'goalsFavor'],
+          [sequelize.fn('sum', sequelize.col('away_team_goals')), 'goalsOwn'],
+          [sequelize.fn('count', sequelize.col('id')), 'totalGames'],
+        ],
+      });
+      return result.toJSON() as ICalcGoals;
+    } catch (error) {
+      console.log(error);
+      throw new CustomError(500, 'Erro seq matche database');
+    }
+  };
 
-  // public findAwayTeam = async (awayTeam: number): Promise<IResultsMatchesAway> => {
-  //   try { //! sequelize fail
-  //     const result = await this.model.findAll({
-  //       where: { awayTeam, inProgress: false },
-  //       attributes: [
-  //         [sequelize.fn('sum', sequelize.col('away_team_goals')), 'sumGoalsFavorAway'],
-  //         [sequelize.fn('sum', sequelize.col('home_team_goals')), 'sumGoalsOwnAway'],
-  //       ],
-  //     });
-  //     const { sumGoalsFavorAway, sumGoalsOwnAway } = result[0] as IMatche;
-  //     console.log(sumGoalsFavorAway);
-  //     return { sumGoalsFavorAway, sumGoalsOwnAway } as IResultsMatchesAway;
-  //     // return result[0] as IResultsMatchesAway;
-  //   } catch (error) {
-  //     console.log(error);
-  //     throw new CustomError(500, 'Erro findAwayTeam matche database');
-  //   }
-  // };
+  public findCalcGoalsAway = async (awayTeam: number): Promise<ICalcGoals> => {
+    try {
+      const [result] = await this.model.findAll({
+        where: { awayTeam, inProgress: false },
+        attributes: [
+          [sequelize.fn('sum', sequelize.col('away_team_goals')), 'goalsFavor'],
+          [sequelize.fn('sum', sequelize.col('home_team_goals')), 'goalsOwn'],
+          [sequelize.fn('count', sequelize.col('id')), 'totalGames'],
+        ],
+      });
+
+      return result.toJSON() as ICalcGoals;
+    } catch (error) {
+      console.log(error);
+      throw new CustomError(500, 'Erro seq matche database');
+    }
+  };
 
   public create = async (matche: IMatche): Promise<IMatche> => {
     try {

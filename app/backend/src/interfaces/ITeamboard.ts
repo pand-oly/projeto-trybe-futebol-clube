@@ -1,6 +1,5 @@
 export interface ICalcGames {
   totalPoints: number;
-  totalGames: number;
   totalVictories: number;
   totalDraws: number;
   totalLosses: number;
@@ -9,6 +8,7 @@ export interface ICalcGames {
 export interface ICalcGoals {
   goalsFavor: number;
   goalsOwn: number;
+  totalGames: number;
 }
 
 export default interface ITeamboard extends ICalcGames, ICalcGoals{

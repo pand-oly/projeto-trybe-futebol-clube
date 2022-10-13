@@ -21,4 +21,13 @@ export default class LeaderboardController {
       next(error);
     }
   };
+
+  public findAll = async (_req: Request, res: Response, next: NextFunction) => {
+    try {
+      const result = await this.leaderboardService.findAll();
+      return res.send(result);
+    } catch (error) {
+      next(error);
+    }
+  };
 }
