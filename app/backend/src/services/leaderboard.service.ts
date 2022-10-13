@@ -67,10 +67,10 @@ export default class LeaderboardService {
   private calcResultMatchesHome = (arrayMatches: IMatche[]): ICalcGames => {
     const resultGames = { totalPoints: 0, totalVictories: 0, totalDraws: 0, totalLosses: 0 };
 
-    arrayMatches.forEach((cur) => {
-      if (cur.homeTeamGoals > cur.awayTeamGoals) {
+    arrayMatches.forEach((matche) => {
+      if (matche.homeTeamGoals > matche.awayTeamGoals) {
         resultGames.totalVictories += 1;
-      } else if (cur.homeTeamGoals === cur.awayTeamGoals) {
+      } else if (matche.homeTeamGoals === matche.awayTeamGoals) {
         resultGames.totalDraws += 1;
       } else {
         resultGames.totalLosses += 1;
@@ -85,10 +85,10 @@ export default class LeaderboardService {
   private calcResultMatchesAway = (arrayMatches: IMatche[]): ICalcGames => {
     const resultGames = { totalPoints: 0, totalVictories: 0, totalDraws: 0, totalLosses: 0 };
 
-    arrayMatches.forEach((cur) => {
-      if (cur.homeTeamGoals < cur.awayTeamGoals) {
+    arrayMatches.forEach((matche) => {
+      if (matche.homeTeamGoals < matche.awayTeamGoals) {
         resultGames.totalVictories += 1;
-      } else if (cur.homeTeamGoals === cur.awayTeamGoals) {
+      } else if (matche.homeTeamGoals === matche.awayTeamGoals) {
         resultGames.totalDraws += 1;
       } else {
         resultGames.totalLosses += 1;
