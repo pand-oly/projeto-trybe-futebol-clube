@@ -1,7 +1,7 @@
 import sequelize = require('sequelize');
 import matcheModelDB from '../database/models/MatcheModel';
 import IMatche, { IUpdateGols } from '../interfaces/IMatche';
-import { ICalcGoals } from '../interfaces/ITeamboard';
+import { ICalcGames } from '../interfaces/ITeamboard';
 import CustomError from '../error';
 import Team from '../database/models/TeamModel';
 
@@ -64,35 +64,43 @@ export default class MatcheModel {
     }
   };
 
-  public findCalcGoalsHome = async (homeTeam: number): Promise<ICalcGoals> => {
+  public findCalcGoalsHome = async (homeTeam: number): Promise<ICalcGames> => {
     try {
       const [result] = await this.model.findAll({
         where: { homeTeam, inProgress: false },
         attributes: [
+          [sequelize.fn('count', sequelize.col('id')), 'totalGames'],
           [sequelize.fn('sum', sequelize.col('home_team_goals')), 'goalsFavor'],
           [sequelize.fn('sum', sequelize.col('away_team_goals')), 'goalsOwn'],
-          [sequelize.fn('count', sequelize.col('id')), 'totalGames'],
+          [sequelize.literal('SUM(home_team_goals) - SUM(away_team_goals)'), 'goalsBalance'],
+          [sequelize.literal(('SUM(home_team_goals > away_team_goals)')), 'totalVictories'],
+          [sequelize.literal(('SUM(home_team_goals < away_team_goals)')), 'totalLosses'],
+          [sequelize.literal(('SUM(home_team_goals = away_team_goals)')), 'totalDraws'],
         ],
       });
-      return result.toJSON() as ICalcGoals;
+      return result.toJSON() as ICalcGames;
     } catch (error) {
       console.log(error);
       throw new CustomError(500, 'Erro seq matche database');
     }
   };
 
-  public findCalcGoalsAway = async (awayTeam: number): Promise<ICalcGoals> => {
+  public findCalcGoalsAway = async (awayTeam: number): Promise<ICalcGames> => {
     try {
       const [result] = await this.model.findAll({
         where: { awayTeam, inProgress: false },
         attributes: [
+          [sequelize.fn('count', sequelize.col('id')), 'totalGames'],
           [sequelize.fn('sum', sequelize.col('away_team_goals')), 'goalsFavor'],
           [sequelize.fn('sum', sequelize.col('home_team_goals')), 'goalsOwn'],
-          [sequelize.fn('count', sequelize.col('id')), 'totalGames'],
+          [sequelize.literal('SUM(away_team_goals) - SUM(home_team_goals)'), 'goalsBalance'],
+          [sequelize.literal(('SUM(home_team_goals < away_team_goals)')), 'totalVictories'],
+          [sequelize.literal(('SUM(home_team_goals > away_team_goals)')), 'totalLosses'],
+          [sequelize.literal(('SUM(home_team_goals = away_team_goals)')), 'totalDraws'],
         ],
       });
 
-      return result.toJSON() as ICalcGoals;
+      return result.toJSON() as ICalcGames;
     } catch (error) {
       console.log(error);
       throw new CustomError(500, 'Erro seq matche database');

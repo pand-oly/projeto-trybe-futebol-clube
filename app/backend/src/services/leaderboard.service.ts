@@ -1,8 +1,7 @@
 import MatcheModel from '../model/matche.model';
 import TeamModel from '../model/team.model';
 import ITeam from '../interfaces/ITeam';
-import ITeamboard, { ICalcGames } from '../interfaces/ITeamboard';
-import IMatche from '../interfaces/IMatche';
+import ITeamboard from '../interfaces/ITeamboard';
 
 export default class LeaderboardService {
   constructor(private matcheModel: MatcheModel, private teamModel: TeamModel) {}
@@ -50,64 +49,27 @@ export default class LeaderboardService {
   private calAllBoards = (boardHome: ITeamboard, boardAway: ITeamboard): ITeamboard => {
     const totalPoints = boardAway.totalPoints + boardHome.totalPoints;
     const totalGames = boardAway.totalGames + boardHome.totalGames;
+
     return {
       name: boardAway.name,
       totalPoints,
       totalGames,
-      totalVictories: boardAway.totalVictories + boardHome.totalVictories,
-      totalDraws: boardAway.totalDraws + boardHome.totalDraws,
-      totalLosses: boardAway.totalLosses + boardHome.totalLosses,
+      totalVictories: Number(boardAway.totalVictories) + Number(boardHome.totalVictories),
+      totalDraws: Number(boardAway.totalDraws) + Number(boardHome.totalDraws),
+      totalLosses: Number(boardAway.totalLosses) + Number(boardHome.totalLosses),
       goalsFavor: Number(boardAway.goalsFavor) + Number(boardHome.goalsFavor),
       goalsOwn: Number(boardAway.goalsOwn) + Number(boardHome.goalsOwn),
       goalsBalance: Number(boardAway.goalsBalance) + Number(boardHome.goalsBalance),
-      efficiency: ((totalPoints / (totalGames * 3)) * 100).toFixed(2),
+      efficiency: ((totalPoints / (Number(totalGames) * 3)) * 100).toFixed(2),
     };
   };
 
-  private calcResultMatchesHome = (arrayMatches: IMatche[]): ICalcGames => {
-    const resultGames = { totalPoints: 0, totalVictories: 0, totalDraws: 0, totalLosses: 0 };
-
-    arrayMatches.forEach((matche) => {
-      if (matche.homeTeamGoals > matche.awayTeamGoals) {
-        resultGames.totalVictories += 1;
-      } else if (matche.homeTeamGoals === matche.awayTeamGoals) {
-        resultGames.totalDraws += 1;
-      } else {
-        resultGames.totalLosses += 1;
-      }
-    });
-
-    resultGames.totalPoints = resultGames.totalVictories * 3 + resultGames.totalDraws;
-
-    return resultGames;
-  };
-
-  private calcResultMatchesAway = (arrayMatches: IMatche[]): ICalcGames => {
-    const resultGames = { totalPoints: 0, totalVictories: 0, totalDraws: 0, totalLosses: 0 };
-
-    arrayMatches.forEach((matche) => {
-      if (matche.homeTeamGoals < matche.awayTeamGoals) {
-        resultGames.totalVictories += 1;
-      } else if (matche.homeTeamGoals === matche.awayTeamGoals) {
-        resultGames.totalDraws += 1;
-      } else {
-        resultGames.totalLosses += 1;
-      }
-    });
-
-    resultGames.totalPoints = resultGames.totalVictories * 3 + resultGames.totalDraws;
-
-    return resultGames;
-  };
-
   private getBoardHome = async (team: ITeam): Promise<ITeamboard> => {
-    const arrayMatchesHome = await this.matcheModel.findHomeTeam(team.id as number);
+    const {
+      goalsFavor, goalsOwn, totalGames, totalVictories, totalDraws, totalLosses, goalsBalance,
+    } = await this.matcheModel.findCalcGoalsHome(team.id as number);
 
-    const { goalsFavor, goalsOwn, totalGames } = await this
-      .matcheModel.findCalcGoalsHome(team.id as number);
-
-    const { totalPoints, totalVictories, totalDraws, totalLosses } = this
-      .calcResultMatchesHome(arrayMatchesHome);
+    const totalPoints = Number(totalVictories) * 3 + Number(totalDraws);
 
     return {
       name: team.teamName,
@@ -118,19 +80,17 @@ export default class LeaderboardService {
       totalLosses,
       goalsFavor,
       goalsOwn,
-      goalsBalance: goalsFavor - goalsOwn,
-      efficiency: ((totalPoints / (totalGames * 3)) * 100).toFixed(2),
+      goalsBalance,
+      efficiency: ((totalPoints / (Number(totalGames) * 3)) * 100).toFixed(2),
     };
   };
 
   private getBoardAway = async (team: ITeam): Promise<ITeamboard> => {
-    const arrayMatchesAway = await this.matcheModel.findAwayTeam(team.id as number);
+    const {
+      goalsFavor, goalsOwn, totalGames, totalVictories, totalDraws, totalLosses, goalsBalance,
+    } = await this.matcheModel.findCalcGoalsAway(team.id as number);
 
-    const { goalsFavor, goalsOwn, totalGames } = await this
-      .matcheModel.findCalcGoalsAway(team.id as number);
-
-    const { totalPoints, totalVictories, totalDraws, totalLosses } = this
-      .calcResultMatchesAway(arrayMatchesAway);
+    const totalPoints = Number(totalVictories) * 3 + Number(totalDraws);
 
     return {
       name: team.teamName,
@@ -141,8 +101,8 @@ export default class LeaderboardService {
       totalLosses,
       goalsFavor,
       goalsOwn,
-      goalsBalance: goalsFavor - goalsOwn,
-      efficiency: ((totalPoints / (totalGames * 3)) * 100).toFixed(2),
+      goalsBalance,
+      efficiency: ((totalPoints / (Number(totalGames) * 3)) * 100).toFixed(2),
     };
   };
 }
